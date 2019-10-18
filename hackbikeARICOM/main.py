@@ -1,3 +1,4 @@
+import sys
 import RPi.GPIO as GPIO                                                         #Import Library for GPIO Communication.
 import Termite_Access                                                           #Used for communication with terMITe sensor.
 import time
@@ -99,7 +100,22 @@ if __name__== "__main__":
     main_path = '/home/pi/Jett-Sen/hackbikeARICOM/'
     data_path = '/home/pi/Jett-Sen/hackbikeARICOM/data/'
     print("TerMITe Connecting....")
-    TF = Termite_Access.termiteObject() #Find a terMITe.
+
+    num_tries = 5
+    is_connected = False
+
+    while not is_connected:
+        try:
+            TF = Termite_Access.termiteObject() # Find a termite
+            is_connected = True
+        except:
+            print('couldn\'t connect to termite, retring after 5sec...')
+            sleep(5)
+            num_tries = num_tries - 1
+
+            if num_tries < 0:
+                sys.exit('Could not connect to a termite after few attempts')
+
     TF.activateCSV() #Swith terMITe output to CSV - Can choose JSON as well.
 
     print("Ready To Collect Data!")
